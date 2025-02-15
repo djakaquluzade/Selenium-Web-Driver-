@@ -1,5 +1,27 @@
 {
   "dependencies": {
     "selenium-webdriver": "^4.28.1"
-  }
+  },
+  "name": "vs-code",
+  "version": "1.0.0",
+  "description": "Testing web application with JavaScript and Selenium WebDriver framework.",
+  "main": "amazonSelectLocation_test.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djakaquluzade/Selenium-Web-Driver-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/djakaquluzade/Selenium-Web-Driver-/issues"
+  },
+  "homepage": "https://github.com/djakaquluzade/Selenium-Web-Driver-#readme" 
+ 
 }
+

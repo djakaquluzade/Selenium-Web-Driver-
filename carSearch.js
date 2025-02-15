@@ -76,9 +76,6 @@ carSearch();
 
 
 
-//GITHUB 
-
-
 
 
 

@@ -1,4 +1,4 @@
-const { Builder, By, until, Key,wait } = require('selenium-webdriver');
+const { Builder, By, until, Key} = require('selenium-webdriver');
 
 async function amazonSearchProduct() {
     let driver = await new Builder().forBrowser('chrome').build();
@@ -28,7 +28,7 @@ async function amazonSearchProduct() {
         console.log("Test başarıyla tamamlandı.");
 
     } finally {
-c
+driver.quit()
     }
 }
 
