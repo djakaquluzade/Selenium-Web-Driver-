@@ -3,81 +3,100 @@
           Test Case ID = TC001
           Test Case Name = Selecting car brand and model on Turbo.az website
           Module = carOptions
-          Description = To verify that the selection of a car brand (BMW) and model (e.g., 5 Series) works correctly on the Turbo.az website.
+          Description = To verify that the selection of a car brand (Audi) and model (A7) works correctly on the Turbo.az website.
           Preconditions: 1.Internet connection is available.
                          2.Chrome browser is installed and operational.
                          3.selenium-webdriver and chromedriver are installed.
+                         4.uBlock Origin extension added to chrome options for fluently test without failures with ads.
                         
 
           Test Steps : 1.Launch Chrome browser and navigate to https://turbo.az.
                        2.Locate and click the "Brand" dropdown element.
-                       3.Locate and click the "BMW" option in the brand selection menu.
+                       3.Locate and click the "Audi" option in the brand selection menu.
                        4.Locate and click the "Model" dropdown element.
-                       5.Locate and click the "320" option in the model selection menu.
-
-          Expected results : 1.The "BMW" brand and "320" model are successfully selected.
+                       5.Locate and click the "A7" option in the model selection menu.
+                       6.Locate and select the "Used" option in the condition selection menu.
+                       7.Locate and type max amount of car price option.
+                       8.Locate and select the USD option in the currency selection.
+                       9.Locate and click the Search submit button.
+          Expected results : 1.The "Audi" brand and "A7" model are successfully selected.
                              2.The selections are applied correctly.
+                             3.Selected car from search results are opened correctly.
 
           Postcondition : 1.The browser is closed.             
 
 */
 
 const { Builder, By, until, Key } = require('selenium-webdriver');
-const { titleContains } = require('selenium-webdriver/lib/until');
+const path = require('path');
+const chrome = require('selenium-webdriver/chrome');
+const adblockExtensionPath = path.join('C:', 'Users', 'Administrator', 'VS Code', 'chromeDriverExtensions', 'CJPALHDLNBPAFIAMEJDNHCPHJBKEIAGM_1_62_0_0.crx'); 
+let options = new chrome.Options();
+options.addExtensions(adblockExtensionPath);
+let driver = new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
 async function carSearch() {
-    let driver = await new Builder().forBrowser('chrome').build();
-    
-
     try {
-        // Sayta getmək
+        await driver.manage().window().maximize()  
         await driver.get('https://turbo.az');
-
+        
         // Car brand dropdown elementini tapmaq və klikləmək
-        let carBrandDropdown = await driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[1]/div/div[1]')); 
-        await carBrandDropdown.click();
-
+        let carBrandDropdown = await driver.findElement(By.css('.tz-dropdown[data-id="q_make"]')).click();
+        
         // Elementin görünməsini gözləmək
-        await driver.wait(until.elementIsVisible(driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[1]/div/div[2]'))), 5000);
-
+        await driver.wait(until.elementIsVisible(driver.findElement(By.css('.tz-dropdown__option[data-val="9"]'))), 3000);
+        let carBrand = await driver.findElement(By.css('.tz-dropdown__option[data-val="9"]'));
         // Seçimi tapıb klikləmək
-        let carBrand = await driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[1]/div/div[2]/div/div[18]/div'));
-        await driver.wait(until.elementIsVisible(carBrand),5000).click()
+        await carBrand.click();
 
-         let carModelDropdown = await driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[2]/div/div[1]'))
-         await carModelDropdown.click()
+        let currentWindowHandle = await driver.getWindowHandle(); 
+        let carModelDropdown = await driver.findElement(By.css('.tz-dropdown[data-id="q_model"]'));
+        await carModelDropdown.click();
 
-         await driver.wait(until.elementIsVisible(driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[2]/div/div[2]'))),5000)
-         let carModel = await driver.findElement(By.xpath('//*[@id="new_q"]/div/div[2]/div[2]/div/div[2]/div/div[12]/label/span[1]')).click()
+        await driver.wait(until.elementIsVisible(driver.findElement(By.css('.tz-dropdown[data-id="q_model"]'))), 3000);
+        let carModel = await driver.findElement(By.css('.tz-dropdown__option[data-val="group167"]')).click();
         
-         let searchButton = await driver.findElement(By.xpath('//*[@id="new_q"]/div/div[5]/div[2]/button'))
-         await searchButton.click()
+        let conditionRadioBtn = await driver.findElement(By.css('.js-main-search-controls-tab[for="q_used_1"]'));
+        await conditionRadioBtn.click();
 
-        let siteTitleContains = await driver.wait(until.titleContains('BMW'),5000)
-
-
+        let maxPrice = await driver.findElement(By.id('q_price_to')).sendKeys('60000');
+        let currency = await driver.findElement(By.css('.tz-dropdown[data-id="q_currency"]'));
+        await currency.click();
         
-    } catch (err) { 
-        console.log('Error: ', err); // Səhv mesajını konsola çap et
-    } finally {
+        await driver.wait(until.elementIsVisible(driver.findElement(By.css('.tz-dropdown__option[data-val="usd"]'))), 3000);
+        let currecnyUsd = await driver.findElement(By.css('.tz-dropdown__option[data-val="usd"]'));
+        await currecnyUsd.click();
 
-        if(siteTitleContains = true){
-            console.log('Test case passed correctly.') ;     
-        } 
-        else{
-            console.log ('Test failed.')
+        let searchButton = await driver.findElement(By.css('button.main-search__btn.tz-btn.tz-btn--primary'));
+        await searchButton.click();
+        
+        // Sayfanın yüklənməsini gözləyin
+        await driver.wait(until.elementIsVisible(driver.findElement(By.css('a[href="/autos/8699947-audi-a7-sportback"]'))), 5000);
+        
+        // Axtarış nəticəsinə klikləyin
+        let searchResult = await driver.findElement(By.css('a[href="/autos/8699947-audi-a7-sportback"]')).click();
+        
+        // Yeni pəncərəyə keçin
+        let allWindowHandles = await driver.getAllWindowHandles();
+        console.log(allWindowHandles);
+        
+        for (let handle of allWindowHandles) {
+            if (handle !== currentWindowHandle) {
+                await driver.switchTo().window(handle);
+                break;
+            }
         }
-       // Test bitdikdən sonra browserı bağla
-       driver.quit()
+
+        // Məhsulun təsvirini almaq
+        let productDescp = await driver.findElement(By.css('.product-description-container.js-description-container')).getText();
+        console.log(`This is description of car: ${productDescp}`);
+
+        console.log('Test passed');
+    } catch (err) { 
+        console.log('Error: ', err); 
+    } finally {
+        await driver.quit();
     }
 }
 
 carSearch();
-
-
-
-
-
-
-
-
