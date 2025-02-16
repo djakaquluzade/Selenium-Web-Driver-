@@ -52,6 +52,7 @@ async function carSearch() {
         let currentWindowHandle = await driver.getWindowHandle(); 
         let carModelDropdown = await driver.findElement(By.css('.tz-dropdown[data-id="q_model"]'));
         await carModelDropdown.click();
+       
 
         await driver.wait(until.elementIsVisible(driver.findElement(By.css('.tz-dropdown[data-id="q_model"]'))), 3000);
         let carModel = await driver.findElement(By.css('.tz-dropdown__option[data-val="group167"]')).click();
@@ -78,7 +79,7 @@ async function carSearch() {
         
         // Yeni pəncərəyə keçin
         let allWindowHandles = await driver.getAllWindowHandles();
-        console.log(allWindowHandles);
+    
         
         for (let handle of allWindowHandles) {
             if (handle !== currentWindowHandle) {
